@@ -1,9 +1,6 @@
-// Importa a função fetch para fazer requisições HTTP (como enviar dados para a Supabase)
 import fetch from 'node-fetch';
 
-// Função handler padrão para APIs no Vercel
 export default async function handler(req, res) {
-  // 1. Garante que a requisição é POST (como o Webhook da Hotmart exige)
   if (req.method !== 'POST') {
     return res.status(405).json({
       message: 'Método não permitido. Use POST.'
@@ -11,45 +8,40 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 2. Extrai o objeto "buyer" do corpo da requisição enviada pela Hotmart
-    const { buyer } = req.body;
+    // 🔍 Corrigido: o e-mail está dentro de req.body.data.buyer.email
+    const { buyer } = req.body.data || {};
 
-    // 3. Verifica se o campo "buyer" existe e contém um e-mail válido
     if (!buyer || !buyer.email || typeof buyer.email !== 'string') {
       return res.status(400).json({
         message: 'Dados do comprador inválidos. O campo "buyer.email" é obrigatório.'
       });
     }
 
-    const email = buyer.email.trim().toLowerCase(); // Limpa e padroniza o e-mail
+    const email = buyer.email.trim().toLowerCase();
 
-    // 4. Define os dados que serão enviados para a tabela "authorized_buyers" da Supabase
     const newEntry = {
       email: email,
       is_active: true,
       notes: 'Cadastro automático via Webhook da Hotmart'
     };
 
-    // 5. Prepara a requisição para a Supabase usando a API REST
     const supabaseResponse = await fetch(`${process.env.SUPABASE_URL}/rest/v1/authorized_buyers`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'apikey': process.env.SUPABASE_API_KEY,
         'Authorization': `Bearer ${process.env.SUPABASE_API_KEY}`,
-        'Prefer': 'return=minimal' // Evita retornar dados para acelerar o processo
+        'Prefer': 'return=minimal'
       },
       body: JSON.stringify(newEntry)
     });
 
-    // 6. Verifica se a Supabase respondeu com sucesso
     if (supabaseResponse.ok) {
       return res.status(200).json({
         message: 'Cadastro realizado com sucesso na Supabase.',
         email: email
       });
     } else {
-      // Caso haja erro na inserção, captura o texto da resposta
       const errorText = await supabaseResponse.text();
       return res.status(500).json({
         message: 'Erro ao cadastrar na Supabase.',
@@ -58,7 +50,6 @@ export default async function handler(req, res) {
     }
 
   } catch (error) {
-    // 7. Captura qualquer erro inesperado no servidor
     return res.status(500).json({
       message: 'Erro interno no servidor.',
       error: error.message
