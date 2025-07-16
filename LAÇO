@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 🔍 Corrigido: o e-mail está dentro de req.body.data.buyer.email
+    // A Hotmart envia os dados dentro de req.body.data
     const { buyer } = req.body.data || {};
 
     if (!buyer || !buyer.email || typeof buyer.email !== 'string') {
