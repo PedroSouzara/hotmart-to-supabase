@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 // ⚠️ Evite deixar a chave exposta no código! Use variável de ambiente em produção
-const supabaseUrl = 'https://iwfatsnzpywmddpqwrgz.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml3ZmF0c256cHltd2RkcHF3cmd6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MDM0ODc3NCwiZXhwIjoyMDY1OTI0Nzc0fQ._FqRVgrfAMwnL56fBzhiv0j45YKS-2RyjEBdcDjCiLk';
+const supabaseUrl = 
+const supabaseKey = 
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
